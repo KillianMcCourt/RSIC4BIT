@@ -57,6 +57,32 @@ COMPONENT dig2dec
 	);
 END COMPONENT;
 
+COMPONENT ALU
+	PORT( clk, rst : IN STD_LOGIC;
+				  a,b : IN STD_LOGIC_VECTOR(3 downto 0);
+      ALU_command : IN STD_LOGIC_VECTOR(3 downto 0);
+		 ALU_output : IN STD_LOGIC_VECTOR(3 downto 0)
+	);
+END COMPONENT;
+
+COMPONENT Decoder 
+   Port (clk, rst : IN STD_LOGIC;
+           Ra, Rb : IN STD_LOGIC_VECTOR(3 downto 0);
+			  opcode : IN STD_LOGIC_VECTOR(7 downto 0);
+      ALU_command : OUT STD_LOGIC_VECTOR(3 downto 0);
+			     a,b : OUT STD_LOGIC_VECTOR (3 downto 0)
+	);
+END COMPONENT;
+
+COMPONENT Ram
+   PORT (
+      rw, en : IN STD_LOGIC;
+      clk, rst : IN STD_LOGIC;
+      Adress : IN STD_LOGIC_VECTOR(7 DOWNTO 0);
+      Data_in : IN STD_LOGIC_VECTOR(7 DOWNTO 0);
+      Data_out : OUT STD_LOGIC_VECTOR(7 DOWNTO 0)
+   );
+END COMPONENT;
 
 
 SIGNAL	zero :  STD_LOGIC;
@@ -72,6 +98,14 @@ SIGNAL	seg7_in2 :  STD_LOGIC_VECTOR(3 DOWNTO 0);
 SIGNAL	seg7_in3 :  STD_LOGIC_VECTOR(3 DOWNTO 0);
 SIGNAL	seg7_in4 :  STD_LOGIC_VECTOR(3 DOWNTO 0);
 SIGNAL	seg7_in5 :  STD_LOGIC_VECTOR(7 DOWNTO 0);
+
+--below are custom signals added 
+
+SIGNAL ALU_command_signal : STD_LOGIC_VECTOR(3 DOWNTO 0);
+SIGNAL ALU_output_signal : STD_LOGIC_VECTOR(3 DOWNTO 0);
+SIGNAL Data_out : STD_LOGIC_VECTOR(7 DOWNTO 0);
+SIGNAL Data_in : STD_LOGIC_VECTOR(7 DOWNTO 0);
+
 
 
 BEGIN 
@@ -126,7 +160,43 @@ PORT MAP(		 vol => "1101010110101010",
 		 seg3 => seg7_in1,
 		 seg4 => seg7_in0);
 
+--below are added inst blocs
+		 
+alu_inst : alu
+PORT MAP(
+        clk => clk,
+        rst => rst,
+        a => decoder_signals.a,
+        b => decoder_signals.b,
+        ALU_command => ALU_command_signal,
+        ALU_output => ALU_output_signal );
 
+decoder_inst : decoder
+PORT MAP (
+        clk => clk,
+        rst => rst,
+        Ra => -- your signal or value here,
+        Rb => -- your signal or value here,
+        opcode => -- your signal or value here,
+        ALU_command => ALU_command_signal,
+        a => seg7_in0,
+        b => seg7_in1);
+
+		
+RAM_inst : Ram
+PORT MAP (
+         rw => rw,
+         en => en,
+         clk => clk,
+         rst => rst,
+         Adress => Adress,
+         Data_in => Data_in,
+         Data_out => Data_out
+      );		
+		 
+		 
+		 
+		 
 
 
 HEX0 <= HEX_out0;

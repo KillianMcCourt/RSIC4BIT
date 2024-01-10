@@ -8,6 +8,7 @@ entity Decoder is
       clk, rst : in STD_LOGIC;
       Ra, Rb : in STD_LOGIC_VECTOR(3 downto 0);
       opcode : in STD_LOGIC_VECTOR(7 downto 0);
+		decoder_enable_ra, decoder_enable_rb: OUT STD_LOGIC;
       ALU_command : out STD_LOGIC_VECTOR(3 downto 0);
       a, b : out STD_LOGIC_VECTOR(3 downto 0)
    );
